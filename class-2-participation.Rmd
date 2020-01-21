@@ -1,0 +1,135 @@
+---
+title: "Class 2 Participation"
+author: "Laura Le"
+date: "1/20/2020"
+output:
+  md_document:
+    variant: gfm
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#install.packages("gapminder")
+library(gapminder)
+library(tidyverse)
+options(scipen = 999)
+
+#install.packages("ggthemes")
+library(ggthemes)
+
+```
+
+```{r}
+
+data("gapminder")
+str(gapminder)
+
+```
+
+```{r}
+
+ggplot(data = gapminder, mapping = aes(x = year, y = pop, color = continent)) +
+  geom_point()
+
+
+#or do it this way to layer onto the graph
+ggplot() +
+  geom_point(data = gapminder, mapping = aes(x = year, y = pop)
+
+```
+```{r}
+#aggregate by continent
+
+gapminder %>%
+  group_by(year, continent) %>%
+  summarise(pop=sum(pop))%>%
+  ggplot(data =., mapping = aes(x=year, y = pop, color = continent)) +
+  geom_point()+
+  scale_y_log10()
+
+
+```
+
+facet grid = facet on two variables
+facet wrap = only specify one variable
+
+```{r}
+
+
+gapminder %>%
+  filter(continent == "Asia") %>%
+ggplot(data = ,, mapping = aes(x = year, y = gdpPercap, colour = country)) +
+  geom_point() +
+  facet_wrap(~continent)
+
+```
+
+```{r}
+ggplot(data = gapminder, aes(x = gdpPercap, y = lifeExp, colour = continent, size = pop))+
+  geom_point() +
+  scale_x_log10() +
+  stat_smooth(method = "lm")
+```
+
+changing mapping for population
+
+```{r}
+
+gapminder %>%
+  filter(continent == "Europe") %>%
+  group_by(country) %>%
+  summarise(gdpPercap = mean(gdpPercap),
+            lifeExp = mean(lifeExp))%>%
+ggplot(data = ., aes(x = gdpPercap, y = lifeExp, shape = country))+
+  geom_point() +
+  scale_x_log10() +
+  stat_smooth(method = "lm")
+
+
+```
+```{r}
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))+
+  geom_point(aes(color = continent), alpha = .3)+
+  scale_x_log10() +
+  stat_smooth(method = "lm", mapping = aes(color = continent))
+```
+
+```{r}
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))+
+  geom_point(alpha = .3)+
+  scale_x_log10() +
+  stat_smooth(method = "lm")+
+  facet_wrap(~continent) +
+  xlab("GDP Per Capita") +
+  ylab("Life Expectancy") +
+  ggtitle("Life Expectancy By GDP per Capita", subtitle = "Faceted By Continent")
+```
+
+```{r}
+ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))+
+  geom_point(alpha = .3)+
+  scale_x_log10() +
+  stat_smooth(method = "lm")+
+  facet_wrap(~continent) +
+  xlab("GDP Per Capita") +
+  ylab("Life Expectancy") +
+  ggtitle("Life Expectancy By GDP per Capita", subtitle = "Faceted By Continent") +
+  coord_flip()
+```
+
+```{r}
+
+gapminder %>%
+ggplot(data = ., mapping = aes(x = continent, y = lifeExp))+
+  stat_summary(fun.ymin = min, 
+               fun.ymax = max, 
+               fun.y = median,
+               alpha = .9) +
+  geom_point() + 
+  coord_flip() +
+  theme_economist()
+
+
+```
+
