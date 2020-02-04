@@ -1,0 +1,72 @@
+---
+title: "Testing out Flex Dashboard with mtcars data"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+---
+
+Direct Sales Activities
+
+```{r setup, include=FALSE}
+
+library(flexdashboard)
+library(tidyverse)
+library(shiny)
+library(htmltools)
+library(shinydashboard)
+library(ggplot2)
+library(dplyr)
+
+
+
+```
+
+Row {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+mtcars
+
+summary(mtcars)
+
+mtcars <- mtcars %>% mutate(
+  cyl = factor(cyl)
+)
+
+```
+
+Row {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+ggplot(mtcars, aes(mpg, cyl))+
+  geom_point()+
+  geom_vline(xintercept = 20.09, color = "red")+
+  annotate("text",x=29, y = 3.25,label = "Cars with 4 cyl have above average mpg")+
+  annotate("text", x = 29, y = 3.10, label = "and cars with 8 cyl have below average mpg")+
+  annotate("label", x = 22, y = 1.5, label = "avg mpg = 20.09")
+
+```
+
+### Chart C
+
+```{r}
+
+ggplot(mtcars, aes(mpg, hp))+
+  geom_point(aes(color = cyl))+
+  geom_vline(xintercept = 20.09, color = "red")+
+  geom_hline(yintercept = 146.7, color = "green")+
+  annotate("text",x=27, y = 250,label = "Cars with above average MPG")+
+  annotate("text", x = 27, y = 230, label = "have below average HP")+
+  annotate("label", x = 30, y = 150, label = "avg horsepower = 146.7")+
+  annotate("label", x = 22, y = 310, label = "avg mpg = 20.09")
+
+```
+
