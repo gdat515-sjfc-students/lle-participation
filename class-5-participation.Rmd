@@ -1,0 +1,148 @@
+---
+title: "FirstPlotly"
+author: "Laura Le"
+date: "2/15/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+install.packages("plotly")
+library(plotly)
+```
+
+
+
+```{r data}
+
+head(diamonds)
+diamonds.sample <- diamonds %>%
+  sample_n(10000)
+
+```
+
+Interfacing with Plotly
+
+```{r }
+
+plot_ly(data=diamonds, x = ~carat, y = ~price)
+
+plot_ly(data=diamonds, x = ~cut, y = ~price)
+
+```
+
+```{r}
+diamonds %>% 
+  sample_n(100) %>%
+  plot_ly(data = ., x = ~carat, y = ~price, type = "scatter")
+```
+
+```{r}
+plot_ly(data = diamonds.sample, x = ~cut, y = ~price) %>%
+  add_trace(p=., type = "scatter")
+```
+
+## Specifying type, axes and labels
+
+```{r}
+plot_ly(data=diamonds.sample, x = ~carat, y = ~price) %>%
+  add_trace(p = ., type = "scatter") %>%
+  layout(xaxis = list(range = c(2.5,5), title = "Carat"),
+         yaxis = list(title = "Price"))
+```
+
+## Change hover text
+
+```{r}
+
+plot_ly(data = diamonds.sample, x = ~carat, y = ~price, 
+        text = ~paste0("Price: ", price, "<br> Carat: ", carat)) %>%
+  add_trace(p= ., type = "scatter") %>%
+  layout(xaxis = list(range = c(2.5, 5), title = "Carat"),
+                   yaxis = list(title = "Price"))
+
+```
+
+# new data set
+```{r}
+
+lines.data <- data.frame(x=c(1:100),
+                         trace0 = rnorm(100, mean = 5)) %>%
+  mutate(trace1 = log(trace0),
+         trace2 = trace0^2)
+
+plot_ly(data = lines.data, x = ~x) %>%
+          add_trace(y = ~trace0, name = "TraceZero", mode = "lines")%>%
+          add_trace(y = ~trace1, name = "TraceOne", mode = "lines+markers")%>%
+          add_trace(y= ~trace2, name = "TraceTwo", mode = "markers")
+
+```
+
+```{r}
+lines.data.wide <- gather(lines.data, "trace", "number", -x)
+
+plot_ly(data = lines.data.wide, x = ~x, y = ~number, color = ~trace, mode = "line")
+
+plot_ly(data = lines.data.wide, x = ~x, y = ~number, color = ~trace, mode = "line") %>% 
+  layout(xaxis = list(ticks = "outside",
+                      dtick = 10,
+                      ticklen = 5,
+                      tickwidth = 2,
+                      tickcolor = toRGB("pink"),
+                      title = "X",
+                      showgrid = FALSE,
+                      zeroline = FALSE),
+         yaxis = list(ticks = "outside",
+                      dtick = 5,
+                      ticklen = 5,
+                      tickwidth = 1,
+                      tickcolor = toRGB("pink"),
+                      showgrid = FALSE,
+                      zeroline = FALSE,
+                      title = "Trace"),
+         showlegend = TRUE,
+         legend = list(x = .1, y = 5),
+         title = "Title")
+
+```
+
+```{r}
+cnt <- with(diamonds.sample, table(cut, clarity))
+
+plot_ly(data = diamonds.sample, x = ~cut, y = ~clarity, z = ~cnt) %>% 
+  add_trace(type = "histogram2dcontour",
+            contours = list(showlables = T,
+                             labelfont = list(color= 'white')))
+
+```
+
+## Box Plots
+
+```{r}
+
+
+plot_ly(data = diamonds.sample, y = ~price, color = ~cut, type = "box")
+
+#flip orientation
+plot_ly(data = diamonds.sample, x = ~price, color = ~cut, type = "box")
+
+```
+
+## 3D
+
+```{r}
+plot_ly(data = diamonds.sample, x = ~carat, y = ~price, z = ~depth, color = ~cut)
+```
+
+```{r}
+
+fig1 <- diamonds.sample %>% 
+  ggplot(data = ., aes(x = price, y = depth, color = cut))+
+  geom_point()+
+  stat_smooth()
+
+ggplotly(fig1)
+```
+
